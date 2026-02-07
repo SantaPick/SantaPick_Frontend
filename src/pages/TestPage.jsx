@@ -33,7 +33,7 @@ const TestPage = () => {
           
           // 중간 결과에서 돌아온 경우 질문 번호 설정
           if (resumeFromIntermediate) {
-            setCurrentQuestion(5); // 5번째 질문 다음부터 시작 (6번째 질문)
+            setCurrentQuestion(22); // 22번째 질문 다음부터 시작 (23번째 질문)
           }
         } else {
           console.error('질문 로드 실패:', data);
@@ -101,9 +101,9 @@ const TestPage = () => {
       // 중간 점검 (예: 50% 완료 시) - currentQuestion 증가 전에 체크
       console.log(`현재 질문: ${currentQuestion + 1}, 전체: ${questions.length}, 중간점: ${Math.floor(questions.length / 2)}`);
       
-      // 중간 결과에서 돌아온 경우가 아니고, 5번째 질문 완료 시에만 중간 결과로 이동
-      if (!resumeFromIntermediate && currentQuestion + 1 === 5) {
-        console.log('중간 결과 페이지로 이동 시작');
+      // 중간 결과에서 돌아온 경우가 아니고, 22번째 질문 완료 시에만 중간 결과로 이동
+      if (!resumeFromIntermediate && currentQuestion + 1 === 22) {
+        console.log('22번째 질문 완료, 중간 결과 페이지로 이동 시작');
         // 중간 결과 제출
         submitIntermediateAnswers([...answers, newAnswer]);
         return;
@@ -115,7 +115,7 @@ const TestPage = () => {
       // 마지막 질문 완료
       console.log('모든 답변 완료:', [...answers, newAnswer]);
       // TODO: 답변 제출
-      navigate('/final');
+      navigate('/final', { state: { sessionId } });
     }
   };
 

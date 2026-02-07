@@ -99,9 +99,9 @@ const LandingPage = () => {
 
             {/* 설명 텍스트 */}
             <p className="description-text">
-              Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit, Sed Do Eiusmod Tempor<br />
-              Incididunt Ut Labore Et Dolore Magna Aliqua. Ut Enim Ad Minim Veniam, Quis<br />
-              Nostrud Exercitation.
+            평소에 어떤 선물을 고를지 오랫동안 고민하셨던 경험 없으신가요?
+            SantaPick을 통해 몰랐던, 취향에 맞는 선물을 추천 받아보세요.<br />
+            심리테스트를 기반으로 선물을 추천해드립니다!
             </p>
           </div>
 

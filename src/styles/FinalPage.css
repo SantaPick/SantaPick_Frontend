@@ -35,28 +35,31 @@
 .final-main {
   display: flex;
   padding: 60px 80px;
-  gap: 80px;
+  gap: 0px;
   align-items: flex-start;
 }
 
-/* 좌측: 추천 상품 이미지들 */
+/* 우측: 추천 상품 이미지들 (겹치는 배치) */
 .recommendation-images {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  position: relative;
+  width: 800px;
+  height: 600px;
   flex-shrink: 0;
+  margin-right: -50px;
 }
 
 .recommendation-image {
+  position: absolute;
   border-radius: 15px;
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.2s ease;
-  position: relative;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .recommendation-image:hover {
   transform: scale(1.05);
+  z-index: 10;
 }
 
 .recommendation-image img {
@@ -66,18 +69,29 @@
 }
 
 .recommendation-image.large {
-  width: 200px;
-  height: 200px;
+  width: 270px;
+  height: 270px;
+  bottom: 60px;
+  right: 40px;
+  z-index: 3;
 }
 
 .recommendation-image.medium {
-  width: 150px;
-  height: 150px;
+  width: 200px;
+  height: 200px;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
 }
 
 .recommendation-image.small {
-  width: 120px;
-  height: 120px;
+  width: 170px;
+  height: 170px;
+  top: 50%;
+  left: 80px;
+  transform: translateY(-50%);
+  z-index: 1;
 }
 
 .image-placeholder {
@@ -91,13 +105,15 @@
   font-size: 14px;
 }
 
-/* 우측: 결과 텍스트 */
+/* 좌측: 결과 텍스트 */
 .result-content {
-  flex: 1;
+  width: 646px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 40px;
+  gap: 0px;
+  padding-top: 150px;
+  flex-shrink: 0;
 }
 
 .result-header {
@@ -105,8 +121,8 @@
 }
 
 .result-subtitle {
-  color: var(--Darkblue, #525568);
-  font-size: 24px;
+  color: var(--blue, #6B9BD2);
+  font-size: 20px;
   font-weight: 600;
   margin-bottom: 10px;
 }
@@ -120,40 +136,44 @@
 }
 
 .result-title .personality-type {
-  color: var(--pink, #FFA2A2);
+  color: var(--pink, #525568);
 }
 
 .result-description {
-  color: var(--Darkblue, #525568);
-  font-size: 18px;
+  color: var(--Darkblue, #FFA2A2);
+  font-size: 22px;
   line-height: 150%;
   margin-bottom: 0;
-  max-width: 500px;
+  max-width: 700px;
+  font-weight: 40px;
 }
 
-/* 상세 분석 버튼 */
-.detail-analysis-btn {
+/* 기존 상세 분석 버튼 스타일 제거됨 */
+
+/* 가운데 화살표 */
+.analysis-arrow-container {
   display: flex;
+  justify-content: center;
   align-items: center;
-  justify-content: space-between;
-  padding: 20px 30px;
-  background: rgba(255, 162, 162, 0.20);
-  border: 3px solid var(--pink, #FFA2A2);
-  border-radius: 15px;
-  color: var(--Darkblue, #525568);
-  font-size: 18px;
-  font-weight: 600;
+  padding: 40px 0;
+}
+
+.analysis-arrow-btn {
+  background: none;
+  border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
-  max-width: 300px;
+  padding: 0px;
+  transition: transform 0.2s ease;
 }
 
-.detail-analysis-btn:hover {
-  background: rgba(255, 162, 162, 0.30);
+.analysis-arrow-btn:hover {
+  transform: scale(1.1);
 }
 
-.detail-analysis-btn svg {
-  color: var(--pink, #FFA2A2);
+.center-arrow {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
 }
 
 /* 하단: 추천 상품 섹션 */
@@ -170,7 +190,7 @@
 }
 
 .products-subtitle {
-  color: var(--Darkblue, #525568);
+  color: var(--Darkblue, #FFA2A2);
   font-size: 16px;
   font-weight: 400;
   margin-bottom: 40px;
@@ -250,9 +270,9 @@
   background: white;
   border-radius: 15px;
   padding: 30px;
-  max-width: 500px;
-  width: 90%;
-  max-height: 80vh;
+  max-width: 1200px;
+  width: 95%;
+  max-height: 90vh;
   overflow-y: auto;
 }
 
@@ -290,51 +310,232 @@
   color: var(--pink, #FFA2A2);
 }
 
-/* 성격 분석 결과 */
+/* 성격 분석 결과 - 차트 형태 */
 .traits-analysis {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-}
-
-.trait-item {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.trait-header {
-  display: flex;
-  justify-content: space-between;
+  gap: 30px;
+  padding: 0px 0;
   align-items: center;
 }
 
-.trait-name {
-  color: var(--Darkblue, #525568);
-  font-size: 16px;
-  font-weight: 600;
+/* 상단 2개 차트 컨테이너 */
+.top-charts {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: nowrap;
 }
 
-.trait-score {
-  color: var(--pink, #FFA2A2);
-  font-size: 16px;
-  font-weight: 700;
+/* 하단 4개 단일 막대 차트를 한 줄로 배치 */
+.bottom-charts {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: nowrap;
 }
 
-.trait-bar {
-  width: 100%;
-  height: 12px;
-  background: #f0f0f0;
-  border-radius: 6px;
+@media (max-width: 768px) {
+  .traits-analysis {
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+  
+  .single-bar {
+    max-width: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .traits-analysis {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .single-bar {
+    max-width: 100px;
+  }
+}
+
+.chart-section {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  width: fit-content;
+  min-width: 200px;
+  justify-self: center;
   overflow: hidden;
 }
 
-.trait-progress {
-  height: 100%;
-  background: linear-gradient(90deg, var(--pink, #FFA2A2) 0%, #FF8A8A 100%);
-  border-radius: 6px;
-  transition: width 0.3s ease;
+/* 다중 막대 차트 (BIG5, STYLE) */
+.top-charts .chart-section {
+  min-width: 400px;
+  max-width: 500px;
 }
+
+/* 단일 막대 차트 (OSL, CNFU, MVS, CVPA) */
+.single-chart {
+  min-width: 180px;
+  max-width: 220px;
+}
+
+.chart-container {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.y-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 200px;
+  padding-bottom: 55px;
+}
+
+/* BIG5 차트만 Y축 하단 패딩 조정 */
+.top-charts .chart-section:nth-child(1) .y-axis {
+  padding-bottom: 65px;
+}
+
+.y-label {
+  color: var(--Darkblue, #525568);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: right;
+  line-height: 1;
+}
+
+.chart-title {
+  background: var(--pink, #FFA2A2);
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  padding: 8px 20px;
+  border-radius: 10px;
+  margin: 0 0 20px 0;
+  display: block;
+  text-align: center;
+}
+
+/* 다중 막대 차트 타이틀 (BIG5, STYLE) - 차트 너비에 맞춤 */
+.top-charts .chart-section .chart-title {
+  width: 100%;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* 단일 막대 차트 타이틀 - 작게 */
+.single-chart .chart-title {
+  width: fit-content;
+  min-width: 80px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.bar-chart {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 200px;
+  padding: 0 15px 55px 15px;
+  gap: 8px;
+  flex: 1;
+  position: relative;
+}
+
+/* BIG5 차트만 하단 패딩 증가 */
+.top-charts .chart-section:nth-child(1) .bar-chart {
+  padding-bottom: 65px;
+}
+
+.chart-grid {
+  position: absolute;
+  top: 0;
+  left: 15px;
+  right: 15px;
+  bottom: 55px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+/* BIG5 차트만 격자선 하단 조정 */
+.top-charts .chart-section:nth-child(1) .chart-grid {
+  bottom: 65px;
+}
+
+.grid-line {
+  height: 1px;
+  background: #e0e0e0;
+  width: 100%;
+}
+
+.chart-bar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+  height: 200px;
+  position: relative;
+}
+
+.chart-bar {
+  background: var(--pink, #FFA2A2);
+  width: 100%;
+  max-width: 40px;
+  min-height: 10px;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.3s ease;
+  margin: 0 auto;
+}
+
+.single-bar {
+  justify-content: center;
+  width: 100px;
+  margin: 0 auto;
+}
+
+.single-bar .chart-bar-container {
+  width: 60px;
+}
+
+.single-bar .chart-bar {
+  max-width: 60px;
+}
+
+.chart-label {
+  color: var(--Darkblue, #525568);
+  font-size: 10px;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1;
+  white-space: nowrap;
+  transform: rotate(-45deg);
+  transform-origin: center bottom;
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-45deg);
+  width: 60px;
+  z-index: 1;
+}
+
+/* BIG5 차트만 라벨을 더 아래로 */
+.top-charts .chart-section:nth-child(1) .chart-label {
+  bottom: -45px;
+}
+
+/* STYLE 차트는 기본 위치 유지 */
+.top-charts .chart-section:nth-child(2) .chart-label {
+  bottom: -35px;
+}
+
 
 /* 상품 상세 정보 */
 .product-detail {
@@ -408,8 +609,36 @@
   }
   
   .recommendation-images {
-    flex-direction: row;
-    justify-content: center;
+    width: 675px;
+    height: 420px;
+    order: 2; /* 모바일에서는 이미지가 아래로 */
+  }
+  
+  .recommendation-image.large {
+    width: 190px;
+    height: 190px;
+    bottom: 40px;
+    right: 25px;
+  }
+
+  .recommendation-image.medium {
+    width: 150px;
+    height: 150px;
+    top: 35px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .recommendation-image.small {
+    width: 130px;
+    height: 130px;
+    top: 50%;
+    left: 50px;
+    transform: translateY(-50%);
+  }
+  
+  .result-content {
+    order: 1; /* 모바일에서는 텍스트가 위로 */
   }
   
   .products-grid {
