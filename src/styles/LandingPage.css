@@ -1,0 +1,273 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.landing-page {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  min-height: 100vh;
+  background: var(--yellow, #FFF5E9);
+  width: 100%;
+}
+
+/* 헤더 스타일 */
+.landing-header {
+  background: var(--Darkblue, #525568);
+  height: 90px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 60px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.header-logo {
+  height: 40px;
+  object-fit: contain;
+}
+
+.header-team {
+  height: 25px;
+  object-fit: contain;
+}
+
+/* 메인 컨테이너 */
+.landing-main {
+  position: relative;
+  width: 100%;
+  padding: 0;
+  box-sizing: border-box;
+  height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+}
+
+/* 배경 아이콘 */
+.background-icon {
+  position: fixed;
+  right: 0px;
+  top: 60px;
+  width: 62vw;
+  height: calc(100vh - 40px);
+  object-fit: contain;
+  opacity: 0.6;
+  z-index: 1;
+}
+
+/* 콘텐츠 영역 */
+.landing-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding: 60px;
+  box-sizing: border-box;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-top: 130px;
+  padding-bottom: 90px;
+}
+
+/* 서브 텍스트 */
+.sub-text {
+  color: #9FCDE6;
+  font-family: Pretendard;
+  font-size: 23px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 121.2%;
+  margin-bottom: 15px;
+}
+
+/* 메인 제목 */
+.main-title {
+  color: var(--Darkblue, #525568);
+  font-family: Pretendard;
+  font-size: 55px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 121.2%;
+  margin-bottom: 20px;
+}
+
+/* 설명 텍스트 */
+.description-text {
+  color: var(--pink, #FFA2A2);
+  font-family: Pretendard;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 121.2%;
+  margin-bottom: 40px;
+}
+
+/* 입력 폼 */
+.landing-form {
+  display: flex;
+  width: 100%;
+  height: 140px;
+  padding: 20px 45px;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 15px;
+  border: 3px solid var(--pink, #FFA2A2);
+  background: rgba(255, 162, 162, 0.20);
+  box-sizing: border-box;
+}
+
+.form-fields {
+  display: flex;
+  align-items: flex-start;
+  gap: 80px;
+  flex: 1;
+  max-width: 60%;
+  margin-left: 40px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 150px;
+}
+
+.form-field label {
+  color: var(--Darkblue, #525568);
+  font-family: Pretendard;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.form-field input {
+  padding: 12px 0px;
+  border: none;
+  border-radius: 8px;
+  font-family: Pretendard;
+  font-size: 16px;
+  background: transparent;
+  width: 180px;
+  color: #666;
+}
+
+.form-field select {
+  padding: 10px 0px;
+  border: none;
+  border-radius: 8px;
+  font-family: Pretendard;
+  font-size: 16px;
+  background: transparent;
+  width: 180px;
+  color: #666;
+}
+
+.form-field input:focus {
+  outline: none;
+  border-color: var(--pink, #FFA2A2);
+}
+
+.form-field select:focus {
+  outline: none;
+  border-color: var(--pink, #FFA2A2);
+}
+
+.age-field {
+  margin-left: 40px;
+}
+
+/* 시작 버튼 */
+.start-button {
+  background: var(--pink, white);
+  color: #FFA2A2;
+  border: none;
+  border-radius: 5.333px;
+  padding: 26.667px;
+  font-family: Pretendard;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  min-width: 386px;
+  margin-left: auto;
+  margin-right: 30px;
+}
+
+.start-button:hover {
+  background: #fff8f8;
+  transform: translateY(-2px);
+}
+
+.start-button:active {
+  transform: translateY(0);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1200px) {
+  .landing-main {
+    padding: 40px 20px;
+  }
+  
+  .landing-form {
+    flex-direction: column;
+    height: auto;
+    gap: 30px;
+    padding: 40px 30px;
+  }
+  
+  .form-fields {
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  .main-title {
+    font-size: 48px;
+  }
+  
+  .background-icon {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .landing-header {
+    padding: 0 20px;
+    height: 120px;
+  }
+  
+  .header-logo,
+  .header-team {
+    height: 50px;
+  }
+  
+  .main-title {
+    font-size: 60px;
+  }
+  
+  .sub-text {
+    font-size: 25px;
+  }
+  
+  .description-text {
+    font-size: 20px;
+  }
+  
+  .form-fields {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .form-field {
+    width: 100%;
+  }
+  
+  .form-field select,
+  .form-field input {
+    width: 100%;
+    min-width: auto;
+  }
+}

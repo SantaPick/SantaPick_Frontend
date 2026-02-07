@@ -1,0 +1,133 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import '../styles/LandingPage.css';
+
+const LandingPage = () => {
+  const navigate = useNavigate();
+  const [userInfo, setUserInfo] = useState({
+    name: '',
+    gender: '',
+    age: '',
+    city: '',
+    date: '',
+    time: ''
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUserInfo(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('사용자 정보:', userInfo);
+    // TODO: API 호출
+    navigate('/test');
+  };
+
+  return (
+    <div className="landing-page">
+      {/* 헤더 */}
+      <header className="landing-header">
+        <img 
+          src="/santapick-logo.png" 
+          alt="SantaPick Logo" 
+          className="header-logo"
+        />
+        <img 
+          src="/prometheus-team.png" 
+          alt="Prometheus 8팀" 
+          className="header-team"
+        />
+      </header>
+
+      {/* 메인 콘텐츠 */}
+      <main className="landing-main">
+        {/* 배경 아이콘 */}
+        <img 
+          src="/background-icon.png" 
+          alt="Background Icon" 
+          className="background-icon"
+        />
+
+        {/* 콘텐츠 영역 */}
+        <div className="landing-content">
+          {/* 텍스트 섹션 */}
+          <div>
+            {/* 서브 텍스트 */}
+            <p className="sub-text">
+              숨겨진 - 당신의 이런 사람인가요?
+            </p>
+
+            {/* 메인 제목 */}
+            <h1 className="main-title">
+              숨겨진 취향을 알아내는<br />
+              선물 추천 심리테스트
+            </h1>
+
+            {/* 설명 텍스트 */}
+            <p className="description-text">
+              Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit, Sed Do Eiusmod Tempor<br />
+              Incididunt Ut Labore Et Dolore Magna Aliqua. Ut Enim Ad Minim Veniam, Quis<br />
+              Nostrud Exercitation.
+            </p>
+          </div>
+
+          {/* 입력 폼 */}
+          <form onSubmit={handleSubmit} className="landing-form">
+            <div className="form-fields">
+              <div className="form-field">
+                <label>이름</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={userInfo.name}
+                  onChange={handleInputChange}
+                  placeholder="Enter your name"
+                  required
+                />
+              </div>
+              
+              <div className="form-field">
+                <label>성별</label>
+                <select
+                  name="gender"
+                  value={userInfo.gender}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="">Select your gender</option>
+                  <option value="male">남성</option>
+                  <option value="female">여성</option>
+                </select>
+              </div>
+              
+              <div className="form-field age-field">
+                <label>나이</label>
+                <input
+                  type="number"
+                  name="age"
+                  value={userInfo.age}
+                  onChange={handleInputChange}
+                  placeholder="Select your Age"
+                  min="1"
+                  max="100"
+                  required
+                />
+              </div>
+            </div>
+
+            <button type="submit" className="start-button">
+              심리테스트 시작하기
+            </button>
+          </form>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default LandingPage;
