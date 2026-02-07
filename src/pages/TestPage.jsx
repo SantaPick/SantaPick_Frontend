@@ -1,57 +1,190 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import '../styles/TestPage.css';
 
 const TestPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  
+  // LandingPage에서 전달받은 sessionId
+  const sessionId = location.state?.sessionId;
+  // IntermediateResultPage에서 돌아왔는지 확인
+  const resumeFromIntermediate = location.state?.resumeFromIntermediate;
 
   useEffect(() => {
-    // TODO: API에서 질문 데이터 가져오기
-    // 임시 더미 데이터
-    const dummyQuestions = [
-      {
-        question_id: 1,
-        question_text: "새로운 경험을 시도하는 것을 좋아한다",
-        target_node: "Openness",
-        answer_options: ["전혀 그렇지 않다", "그렇지 않다", "보통이다", "그렇다", "매우 그렇다"]
-      },
-      {
-        question_id: 2,
-        question_text: "계획을 세우고 체계적으로 일을 처리한다",
-        target_node: "Conscientiousness",
-        answer_options: ["전혀 그렇지 않다", "그렇지 않다", "보통이다", "그렇다", "매우 그렇다"]
+    // sessionId가 없으면 랜딩 페이지로 리다이렉트
+    if (!sessionId) {
+      navigate('/');
+      return;
+    }
+    
+    const fetchQuestions = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/api/test/questions');
+        const data = await response.json();
+        
+        if (data.success) {
+          setQuestions(data.data.questions);
+          
+          // 중간 결과에서 돌아온 경우 질문 번호 설정
+          if (resumeFromIntermediate) {
+            setCurrentQuestion(5); // 5번째 질문 다음부터 시작 (6번째 질문)
+          }
+        } else {
+          console.error('질문 로드 실패:', data);
+        }
+      } catch (error) {
+        console.error('API 호출 실패:', error);
+      } finally {
+        setLoading(false);
       }
-    ];
-    setQuestions(dummyQuestions);
-    setLoading(false);
+    };
+
+    fetchQuestions();
   }, []);
 
-  const handleAnswer = (answer) => {
+  const handleAnswerSelect = (answer) => {
+    setSelectedAnswer(answer);
+  };
+
+  const submitIntermediateAnswers = async (allAnswers) => {
+    console.log('중간 답변 제출 시작:', allAnswers.length, '개 답변');
+    try {
+      const response = await fetch('http://localhost:8000/api/test/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          session_id: sessionId,
+          answers: allAnswers,
+          progress: {
+            current_step: currentQuestion + 1,
+            total_steps: questions.length,
+            is_final: false
+          }
+        })
+      });
+
+      const data = await response.json();
+      console.log('중간 답변 제출 응답:', data);
+      
+      if (data.success) {
+        console.log('중간 결과 페이지로 이동:', sessionId);
+        // 중간 결과 페이지로 이동
+        navigate('/intermediate', { state: { sessionId } });
+      } else {
+        console.error('중간 답변 제출 실패:', data.error);
+      }
+    } catch (error) {
+      console.error('API 호출 오류:', error);
+    }
+  };
+
+  const handleNext = () => {
+    if (!selectedAnswer) return;
+
     const newAnswer = {
-      question_id: questions[currentQuestion].question_id,
-      answer: answer,
+      question_id: questions[currentQuestion].id,
+      answer: selectedAnswer,
       target_node: questions[currentQuestion].target_node
     };
     
     setAnswers(prev => [...prev, newAnswer]);
     
     if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(prev => prev + 1);
+      // 중간 점검 (예: 50% 완료 시) - currentQuestion 증가 전에 체크
+      console.log(`현재 질문: ${currentQuestion + 1}, 전체: ${questions.length}, 중간점: ${Math.floor(questions.length / 2)}`);
       
-      // 중간 점검 (예: 50% 완료 시)
-      if (currentQuestion + 1 === Math.floor(questions.length / 2)) {
-        navigate('/intermediate');
+      // 중간 결과에서 돌아온 경우가 아니고, 5번째 질문 완료 시에만 중간 결과로 이동
+      if (!resumeFromIntermediate && currentQuestion + 1 === 5) {
+        console.log('중간 결과 페이지로 이동 시작');
+        // 중간 결과 제출
+        submitIntermediateAnswers([...answers, newAnswer]);
         return;
       }
+      
+      setCurrentQuestion(prev => prev + 1);
+      setSelectedAnswer(null); // 다음 질문으로 넘어갈 때 선택 초기화
     } else {
       // 마지막 질문 완료
       console.log('모든 답변 완료:', [...answers, newAnswer]);
       // TODO: 답변 제출
       navigate('/final');
     }
+  };
+
+  // 질문 유형별 UI 렌더링
+  const renderQuestionUI = (question) => {
+    const { question_type, choices } = question;
+
+    // 4-choice: 세로 4개 버튼
+    if (question_type === '4_choice_question') {
+      return (
+        <div className="choice-4-container">
+          {choices.map((choice, index) => (
+            <button
+              key={index}
+              onClick={() => handleAnswerSelect(choice)}
+              className={`choice-4-button ${selectedAnswer === choice ? 'selected' : ''}`}
+            >
+              {choice}
+            </button>
+          ))}
+        </div>
+      );
+    }
+
+    // 2-choice, O-X: 가로 2개 버튼
+    if (question_type === '2_choice_question' || question_type === 'O_X_question') {
+      return (
+        <div className="choice-2-container">
+          {choices.map((choice, index) => (
+            <button
+              key={index}
+              onClick={() => handleAnswerSelect(choice)}
+              className={`choice-2-button ${selectedAnswer === choice ? 'selected' : 'unselected'}`}
+            >
+              {choice}
+            </button>
+          ))}
+        </div>
+      );
+    }
+
+    // 5-point: 원형 5개 버튼만
+    if (question_type === '5_point_question') {
+      return (
+        <div className="choice-5-container">
+          <span className="choice-5-label">아니다</span>
+          
+          <div className="choice-5-buttons">
+            {choices.map((choice, index) => (
+              <button
+                key={index}
+                onClick={() => handleAnswerSelect(choice)}
+                className={`choice-5-button ${selectedAnswer === choice ? 'selected' : ''} ${index === 2 ? 'center' : ''}`}
+              >
+                {index === 0 && <img src="/arrow-big-left.png" alt="Left" style={{width: '30px', height: '30px'}} />}
+                {index === 1 && <img src="/arrow-big-left.png" alt="Left" style={{width: '30px', height: '30px'}} />}
+                {index === 2 && ''}
+                {index === 3 && <img src="/arrow-big-right.png" alt="Right" style={{width: '30px', height: '30px'}} />}
+                {index === 4 && <img src="/arrow-big-right.png" alt="Right" style={{width: '30px', height: '30px'}} />}
+              </button>
+            ))}
+          </div>
+          
+          <span className="choice-5-label">맞다</span>
+        </div>
+      );
+    }
+
+    return null;
   };
 
   if (loading) {
@@ -65,58 +198,42 @@ const TestPage = () => {
   const progress = ((currentQuestion + 1) / questions.length) * 100;
 
   return (
-    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-      <div style={{ marginBottom: '20px' }}>
-        <div style={{ 
-          width: '100%', 
-          height: '10px', 
-          backgroundColor: '#e0e0e0', 
-          borderRadius: '5px',
-          overflow: 'hidden'
-        }}>
-          <div style={{ 
-            width: `${progress}%`, 
-            height: '100%', 
-            backgroundColor: '#4CAF50',
-            transition: 'width 0.3s ease'
-          }}></div>
+    <div className="test-page">
+      {/* 헤더 */}
+      <header className="test-header">
+        <img src="/santapick-logo.png" alt="SantaPick Logo" className="header-logo" />
+        <img src="/prometheus-team.png" alt="Prometheus Team" className="header-team" />
+      </header>
+
+
+      {/* 메인 컨테이너 */}
+      <main className="test-main">
+        {/* 위쪽 컨테이너: 문항번호 + 질문&선택지 */}
+        <div className="question-container">
+          <div className="question-number">
+            {currentQuestion + 1}
+          </div>
+          
+          <div className="question-and-choices">
+            <h2 className="question-text">
+              {questions[currentQuestion].question}
+            </h2>
+
+            {renderQuestionUI(questions[currentQuestion])}
+          </div>
         </div>
-        <p style={{ textAlign: 'center', marginTop: '10px' }}>
-          {currentQuestion + 1} / {questions.length}
-        </p>
-      </div>
 
-      <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-        <h2>{questions[currentQuestion].question_text}</h2>
-      </div>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-        {questions[currentQuestion].answer_options.map((option, index) => (
-          <button
-            key={index}
-            onClick={() => handleAnswer(option)}
-            style={{
-              padding: '15px 20px',
-              fontSize: '16px',
-              border: '2px solid #ddd',
-              borderRadius: '8px',
-              backgroundColor: 'white',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
-            onMouseOver={(e) => {
-              e.target.style.backgroundColor = '#f5f5f5';
-              e.target.style.borderColor = '#4CAF50';
-            }}
-            onMouseOut={(e) => {
-              e.target.style.backgroundColor = 'white';
-              e.target.style.borderColor = '#ddd';
-            }}
+        {/* 아래쪽 컨테이너: 다음으로 버튼 */}
+        <div className="button-container">
+          <button 
+            className="next-button"
+            onClick={handleNext}
+            disabled={!selectedAnswer}
           >
-            {option}
+            다음으로
           </button>
-        ))}
-      </div>
+        </div>
+      </main>
     </div>
   );
 };

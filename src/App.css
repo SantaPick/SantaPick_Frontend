@@ -4,6 +4,43 @@
   padding: 0;
 }
 
+/* 전역 focus 스타일 완전 제거 */
+* {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+*:focus,
+*:focus-visible,
+*:active,
+*:hover {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: inherit !important;
+}
+
+button,
+input,
+select,
+textarea {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+button:focus,
+button:focus-visible,
+button:active,
+input:focus,
+input:focus-visible,
+select:focus,
+select:focus-visible,
+textarea:focus,
+textarea:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: inherit !important;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;

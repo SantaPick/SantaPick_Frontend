@@ -1,0 +1,323 @@
+
+/* 전역 button focus 스타일 제거 */
+* {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+*:focus,
+*:focus-visible,
+*:active {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: inherit !important;
+}
+
+button {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+button:focus,
+button:focus-visible,
+button:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* TestPage 스타일 */
+.test-page {
+  width: 100%;
+  min-height: 100vh;
+  background: var(--yellow, #FFF5E9);
+  font-family: Pretendard;
+  margin: 0;
+  padding: 0;
+}
+
+/* 헤더 (Landing Page와 동일) */
+.test-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 60px;
+  background-color: #525568;
+  height: 80px;
+  box-sizing: border-box;
+}
+
+.test-header .header-logo {
+  height: 35px;
+  object-fit: contain;
+}
+
+.test-header .header-team {
+  height: 25px;
+  object-fit: contain;
+}
+
+/* 메인 컨테이너 */
+.test-main {
+  position: relative;
+  width: 100%;
+  padding: 60px;
+  box-sizing: border-box;
+  height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0px;
+}
+
+/* 배경 아이콘 */
+.test-background-icon {
+  position: fixed;
+  right: 0px;
+  top: 60px;
+  width: 62vw;
+  height: calc(100vh - 40px);
+  object-fit: contain;
+  opacity: 0.6;
+  z-index: 0;
+}
+
+/* 질문 컨테이너 */
+.question-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0px;
+  max-width: 1200px;
+}
+
+/* 질문 번호 */
+.question-number {
+  font-family: 'Nabla', sans-serif;
+  font-size: 255.228px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -7.657px;
+  flex-shrink: 0;
+  color: #FFA2A2;
+  background: linear-gradient(#FFA2A2, #FFA2A2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 0 #FFA2A2);
+}
+
+/* 버튼 컨테이너 */
+.button-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: -25px;
+}
+
+/* 질문과 선택지를 세로로 배치 */
+.question-and-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin-bottom: 20px;
+  width: 100%;
+  align-items: center;
+}
+
+/* 질문 텍스트 */
+.question-text {
+  color: var(--Darkblue, #525568);
+  text-align: center;
+  font-family: Pretendard;
+  font-size: 40px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 121.2%;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+/* 4-choice 버튼 (세로 배치) */
+.choice-4-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 60px;
+}
+
+.choice-4-button {
+  width: 500px;
+  padding: 20px;
+  font-size: 20px;
+  font-family: Pretendard;
+  border: 3px solid #FFA2A2;
+  border-radius: 15px;
+  background: rgba(255, 162, 162, 0.20);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #FFA2A2;
+}
+
+.choice-4-button:hover {
+  background: #FFA2A2;
+  color: white;
+}
+
+.choice-4-button.selected {
+  background: #FFA2A2;
+  color: white;
+}
+
+/* 2-choice, O-X 버튼 (가로 배치) */
+.choice-2-container {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+}
+
+.choice-2-button {
+  width: 250px;
+  height: 140px;
+  font-size: 24px;
+  font-family: Pretendard;
+  font-weight: 600;
+  border: 3px solid #FFA2A2;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.choice-2-button.selected {
+  background: #FFA2A2;
+  color: #FFF5E9;
+}
+
+.choice-2-button.unselected {
+  background: rgba(255, 162, 162, 0.1);
+  color: #FFA2A2;
+}
+
+.choice-2-button:hover {
+  background: #FFA2A2;
+  color: #FFF5E9;
+}
+
+/* 5-point 버튼 (원형 배치) */
+.choice-5-container {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  align-items: center;
+  margin: 40px 0;
+}
+
+.choice-5-label {
+  font-size: 25px;
+  color: #FFA2A2;
+  font-family: Pretendard;
+  font-weight: 600;
+}
+
+.choice-5-buttons {
+  display: flex;
+  gap: 25px;
+  align-items: center;
+}
+
+.choice-5-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid #FFA2A2;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 162, 162, 0.1);
+  position: relative;
+  font-size: 20px;
+  color: #FFA2A2;
+}
+
+.choice-5-button.selected {
+  background: rgba(255, 162, 162, 0.8);
+}
+
+.choice-5-button.center {
+  background-image: url('/badge.png');
+  background-size: 30px 30px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: rgba(255, 162, 162, 0.1);
+}
+
+.choice-5-button.center.selected {
+  background-image: url('/badge.png');
+  background-size: 30px 30px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: rgba(255, 162, 162, 0.8);
+}
+
+.choice-5-button:hover {
+  background: rgba(255, 162, 162, 0.8);
+}
+
+.choice-5-button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: 3px solid #FFA2A2 !important;
+}
+
+.choice-5-button:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border: 3px solid #FFA2A2 !important;
+}
+
+.choice-5-button:active {
+  outline: none !important;
+  box-shadow: none !important;
+  border: 3px solid #FFA2A2 !important;
+}
+
+.choice-5-button.center:hover {
+  background-image: url('/badge.png');
+  background-size: 30px 30px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: rgba(255, 162, 162, 0.8);
+}
+
+/* 다음으로 버튼 */
+.next-button {
+  width: 700px;
+  height: 64px;
+  background: #FFA2A2;
+  color: white;
+  border: none;
+  border-radius: 5.333px;
+  font-family: Pretendard;
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.next-button:hover {
+  background: #FF8A8A;
+}
+
+.next-button:disabled {
+  background: #ffd0d0;
+  cursor: not-allowed;
+}

@@ -1,27 +1,69 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import '../styles/FinalPage.css';
 
 const FinalPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [finalData, setFinalData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [showResultRatio, setShowResultRatio] = useState(false);
   const [showProductInfo, setShowProductInfo] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  // TODO: API에서 최종 결과 데이터 가져오기
-  const finalResult = {
-    personality_type: "감성적인 로맨티스트",
-    traits: {
-      Openness: 0.8,
-      Conscientiousness: 0.6,
-      Extraversion: 0.7,
-      Agreeableness: 0.9,
-      Neuroticism: 0.3
-    },
-    recommendations: [
-      { product_id: 1316, score: 0.450, rank: 1, name: "향수 세트", price: "89,000원" },
-      { product_id: 2547, score: 0.420, rank: 2, name: "캔들 컬렉션", price: "45,000원" },
-      { product_id: 3891, score: 0.395, rank: 3, name: "아로마 디퓨저", price: "120,000원" }
-    ]
+  const sessionId = location.state?.sessionId;
+
+  useEffect(() => {
+    if (!sessionId) {
+      navigate('/');
+      return;
+    }
+    fetchFinalResult();
+  }, [sessionId]);
+
+  const fetchFinalResult = async () => {
+    try {
+      // 추천 결과 가져오기
+      const recommendationResponse = await fetch(`http://localhost:8000/api/recommendation/${sessionId}`);
+      const recommendationData = await recommendationResponse.json();
+      
+      if (recommendationData.success) {
+        // 상위 3개 상품 정보 가져오기
+        const topProducts = recommendationData.data.recommendations.slice(0, 3);
+        const productDetails = await Promise.all(
+          topProducts.map(async (rec) => {
+            const productResponse = await fetch(`http://localhost:8000/api/products/${rec.product_id}`);
+            const productData = await productResponse.json();
+            return {
+              ...rec,
+              ...productData.data
+            };
+          })
+        );
+
+        // GPT를 통한 최종 성격 분석 (임시로 더미 데이터 사용)
+        setFinalData({
+          personality_type: "창의적인 감성주의자",
+          description: "당신은 예술적 감각이 뛰어나고 감정이 풍부한 사람입니다. 새로운 경험을 추구하며 타인의 감정에 공감하는 능력이 뛰어납니다.",
+          recommendations: productDetails,
+          traits: {
+            "개방성": 0.85,
+            "성실성": 0.65,
+            "외향성": 0.72,
+            "친화성": 0.88,
+            "신경성": 0.35
+          }
+        });
+      } else {
+        console.error('추천 결과 조회 실패:', recommendationData.error);
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('API 호출 오류:', error);
+      navigate('/');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleProductClick = (product) => {
@@ -30,241 +72,196 @@ const FinalPage = () => {
   };
 
   const handleRestart = () => {
-    console.log('처음부터 다시 시작');
     navigate('/');
   };
 
+  if (loading) {
+    return (
+      <div className="final-page">
+        <div style={{ textAlign: 'center', padding: '50px' }}>
+          최종 결과를 분석하는 중...
+        </div>
+      </div>
+    );
+  }
+
+  if (!finalData) {
+    return (
+      <div className="final-page">
+        <div style={{ textAlign: 'center', padding: '50px' }}>
+          결과를 불러올 수 없습니다.
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-      <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-        <h1>추천 결과</h1>
-        <h2 style={{ color: '#4CAF50', marginBottom: '10px' }}>
-          {finalResult.personality_type}
-        </h2>
-        <p style={{ color: '#666' }}>
-          당신의 성격에 맞는 선물을 추천해드립니다
-        </p>
-      </div>
+    <div className="final-page">
+      {/* 헤더 */}
+      <header className="final-header">
+        <img src="/santapick-logo.png" alt="SantaPick Logo" className="header-logo" />
+        <img src="/prometheus-team.png" alt="Prometheus Team" className="header-team" />
+      </header>
 
-      <div style={{ display: 'flex', gap: '20px', marginBottom: '30px' }}>
-        <button
-          onClick={() => setShowResultRatio(true)}
-          style={{
-            flex: 1,
-            padding: '15px',
-            backgroundColor: '#f8f9fa',
-            border: '2px solid #ddd',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontSize: '16px'
-          }}
-        >
-          성격 분석 결과 보기
-        </button>
-        
-        <button
-          onClick={handleRestart}
-          style={{
-            flex: 1,
-            padding: '15px',
-            backgroundColor: 'white',
-            border: '2px solid #4CAF50',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontSize: '16px',
-            color: '#4CAF50'
-          }}
-        >
-          처음부터 다시하기
-        </button>
-      </div>
-
-      <div>
-        <h3 style={{ marginBottom: '20px' }}>추천 선물</h3>
-        <div style={{ display: 'grid', gap: '20px' }}>
-          {finalResult.recommendations.map((product) => (
-            <div
-              key={product.product_id}
+      {/* 메인 컨텐츠 */}
+      <main className="final-main">
+        {/* 좌측: 추천 상품 이미지들 */}
+        <div className="recommendation-images">
+          {finalData.recommendations.slice(0, 3).map((product, index) => (
+            <div 
+              key={product.product_id} 
+              className={`recommendation-image ${index === 0 ? 'large' : index === 1 ? 'medium' : 'small'}`}
               onClick={() => handleProductClick(product)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                padding: '20px',
-                border: '2px solid #ddd',
-                borderRadius: '12px',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.borderColor = '#4CAF50';
-                e.currentTarget.style.backgroundColor = '#f8f9fa';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.borderColor = '#ddd';
-                e.currentTarget.style.backgroundColor = 'white';
-              }}
             >
-              <div style={{ 
-                width: '80px', 
-                height: '80px', 
-                backgroundColor: '#e0e0e0', 
-                borderRadius: '8px',
-                marginRight: '20px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '12px',
-                color: '#666'
-              }}>
-                이미지
-              </div>
-              
-              <div style={{ flex: 1 }}>
-                <h4 style={{ margin: '0 0 5px 0' }}>{product.name}</h4>
-                <p style={{ margin: '0 0 5px 0', color: '#666' }}>
-                  추천도: {(product.score * 100).toFixed(1)}%
-                </p>
-                <p style={{ margin: '0', fontWeight: 'bold', color: '#4CAF50' }}>
-                  {product.price}
-                </p>
-              </div>
-              
-              <div style={{ 
-                backgroundColor: '#4CAF50',
-                color: 'white',
-                padding: '5px 10px',
-                borderRadius: '20px',
-                fontSize: '14px',
-                fontWeight: 'bold'
-              }}>
-                #{product.rank}
+              <img 
+                src={`http://localhost:8000/static/${product.image_path}`} 
+                alt={product.name}
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+              <div className="image-placeholder" style={{ display: 'none' }}>
+                {index + 1}순위
               </div>
             </div>
           ))}
         </div>
-      </div>
+
+        {/* 우측: 결과 텍스트 */}
+        <div className="result-content">
+          <div className="result-header">
+            <p className="result-subtitle">당신은</p>
+            <h1 className="result-title">
+              '<span className="personality-type">{finalData.personality_type}</span>' 입니다.
+            </h1>
+            <p className="result-description">
+              {finalData.description}
+            </p>
+          </div>
+
+          {/* 상세 분석 버튼 */}
+          <button 
+            className="detail-analysis-btn"
+            onClick={() => setShowResultRatio(true)}
+          >
+            <span>상세 분석 결과</span>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </main>
+
+      {/* 하단: 추천 상품 목록 */}
+      <section className="products-section">
+        <h2 className="products-title">이런분의 취향을 겨냥한 선물을 추천해드릴게요.</h2>
+        <p className="products-subtitle">선물을 클릭하면 상세 정보를 확인할 수 있어요!</p>
+        
+        <div className="products-grid">
+          {finalData.recommendations.map((product) => (
+            <div 
+              key={product.product_id}
+              className="product-card"
+              onClick={() => handleProductClick(product)}
+            >
+              <div className="product-image">
+                <img 
+                  src={`http://localhost:8000/static/${product.image_path}`} 
+                  alt={product.name}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+                <div className="image-placeholder" style={{ display: 'none' }}>
+                  상품 이미지
+                </div>
+              </div>
+              <div className="product-info">
+                <h3 className="product-name">{product.name}</h3>
+                <p className="product-price">₩{product.price?.toLocaleString() || '가격 정보 없음'}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* 성격 분석 결과 모달 */}
       {showResultRatio && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            padding: '30px',
-            borderRadius: '12px',
-            maxWidth: '500px',
-            width: '90%',
-            maxHeight: '80vh',
-            overflow: 'auto'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3>성격 분석 결과</h3>
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h3>상세 분석 결과</h3>
               <button
                 onClick={() => setShowResultRatio(false)}
-                style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer' }}
+                className="modal-close"
               >
                 ×
               </button>
             </div>
             
-            {Object.entries(finalResult.traits).map(([trait, score]) => (
-              <div key={trait} style={{ marginBottom: '15px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                  <span>{trait}</span>
-                  <span>{(score * 100).toFixed(0)}%</span>
+            <div className="traits-analysis">
+              {Object.entries(finalData.traits).map(([trait, score]) => (
+                <div key={trait} className="trait-item">
+                  <div className="trait-header">
+                    <span className="trait-name">{trait}</span>
+                    <span className="trait-score">{(score * 100).toFixed(0)}%</span>
+                  </div>
+                  <div className="trait-bar">
+                    <div 
+                      className="trait-progress" 
+                      style={{ width: `${score * 100}%` }}
+                    ></div>
+                  </div>
                 </div>
-                <div style={{ 
-                  width: '100%', 
-                  height: '8px', 
-                  backgroundColor: '#e0e0e0', 
-                  borderRadius: '4px',
-                  overflow: 'hidden'
-                }}>
-                  <div style={{ 
-                    width: `${score * 100}%`, 
-                    height: '100%', 
-                    backgroundColor: '#4CAF50'
-                  }}></div>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       )}
 
       {/* 상품 정보 모달 */}
       {showProductInfo && selectedProduct && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            padding: '30px',
-            borderRadius: '12px',
-            maxWidth: '600px',
-            width: '90%',
-            maxHeight: '80vh',
-            overflow: 'auto'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <div className="modal-overlay">
+          <div className="modal-content product-modal">
+            <div className="modal-header">
               <h3>상품 정보</h3>
               <button
                 onClick={() => setShowProductInfo(false)}
-                style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer' }}
+                className="modal-close"
               >
                 ×
               </button>
             </div>
             
-            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-              <div style={{ 
-                width: '200px', 
-                height: '200px', 
-                backgroundColor: '#e0e0e0', 
-                borderRadius: '8px',
-                margin: '0 auto 15px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '14px',
-                color: '#666'
-              }}>
-                상품 이미지
+            <div className="product-detail">
+              <div className="product-detail-image">
+                <img 
+                  src={`http://localhost:8000/static/${selectedProduct.image_path}`} 
+                  alt={selectedProduct.name}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+                <div className="image-placeholder" style={{ display: 'none' }}>
+                  상품 이미지
+                </div>
               </div>
-              <h4>{selectedProduct.name}</h4>
-              <p style={{ fontSize: '18px', fontWeight: 'bold', color: '#4CAF50' }}>
-                {selectedProduct.price}
-              </p>
-              <p style={{ color: '#666' }}>
-                추천도: {(selectedProduct.score * 100).toFixed(1)}%
-              </p>
-            </div>
-            
-            <div>
-              <h4>상품 설명</h4>
-              <p style={{ color: '#666', lineHeight: '1.6' }}>
-                이 상품은 당신의 성격 특성에 매우 잘 맞는 선물입니다. 
-                특히 감성적이고 로맨틱한 성향을 가진 분들께 인기가 많습니다.
-              </p>
+              
+              <div className="product-detail-info">
+                <h4>{selectedProduct.name}</h4>
+                <p className="detail-price">₩{selectedProduct.price?.toLocaleString() || '가격 정보 없음'}</p>
+                <p className="similarity-score">
+                  추천도: {(selectedProduct.similarity * 100).toFixed(1)}%
+                </p>
+                
+                <div className="product-description">
+                  <h5>상품 설명</h5>
+                  <p>{selectedProduct.description || '이 상품은 당신의 성격 특성에 매우 잘 맞는 선물입니다.'}</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

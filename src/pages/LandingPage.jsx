@@ -21,11 +21,40 @@ const LandingPage = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log('사용자 정보:', userInfo);
-    // TODO: API 호출
-    navigate('/test');
+    
+    try {
+      // 사용자 정보를 백엔드에 저장하고 sessionId 받기
+      const response = await fetch('http://localhost:8000/api/user/info', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: userInfo.name,
+          gender: userInfo.gender,
+          age: parseInt(userInfo.age),
+          city: "서울", // 기본값
+          date: new Date().toISOString().split('T')[0],
+          time: new Date().toTimeString().split(' ')[0]
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        // sessionId와 함께 TestPage로 이동
+        navigate('/test', { state: { sessionId: data.data.session_id } });
+      } else {
+        console.error('사용자 정보 저장 실패:', data.error);
+        alert('사용자 정보 저장에 실패했습니다. 다시 시도해주세요.');
+      }
+    } catch (error) {
+      console.error('API 호출 오류:', error);
+      alert('서버 연결에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   return (
