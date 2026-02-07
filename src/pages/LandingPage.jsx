@@ -88,7 +88,7 @@ const LandingPage = () => {
           <div>
             {/* 서브 텍스트 */}
             <p className="sub-text">
-              숨겨진 - 당신의 이런 사람인가요?
+              당신은 어떤 사람인가요?
             </p>
 
             {/* 메인 제목 */}
